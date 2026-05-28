@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus AI - Workspace</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            /* Default Dark Mode Variables */
+            --bg-main: #0B0F19;
+            --bg-sidebar: #111827;
+            --bg-card: #1F2937;
+            --accent-primary: #6366F1;
+            --accent-hover: #4F46E5;
+            --text-main: #F3F4F6;
+            --text-muted: #9CA3AF;
+            --border-color: #374151;
+            --header-bg: rgba(11, 15, 25, 0.8);
+        }
+
+        /* Light Mode Override Variables */
+        body.light-mode {
+            --bg-main: #F9FAFB;
+            --bg-sidebar: #FFFFFF;
+            --bg-card: #FFFFFF;
+            --accent-primary: #4F46E5;
+            --accent-hover: #4338CA;
+            --text-main: #111827;
+            --text-muted: #6B7280;
+            --border-color: #E5E7EB;
+            --header-bg: rgba(249, 250, 251, 0.8);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- SIDEBAR LAYOUT --- */
+        .sidebar {
+            width: 300px;
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+            justify-content: space-between;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .brand i {
+            color: var(--accent-primary);
+        }
+
+        .context-panel {
+            margin-top: 40px;
+            flex-grow: 1;
+        }
+
+        .section-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        .upload-box {
+            background: rgba(99, 102, 241, 0.05);
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 24px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .upload-box:hover {
+            border-color: var(--accent-primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .upload-box i {
+            font-size: 24px;
+            color: var(--accent-primary);
+            margin-bottom: 10px;
+        }
+
+        .upload-box p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .file-status {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        /* PREMIUM TACTILE BUTTON UPGRADE */
+        .btn-action {
+            width: 100%;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-hover));
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-top: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-action:hover {
+            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-action:active {
+            transform: translateY(1px) scale(0.98);
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+        }
+
+        .system-status {
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+
+        .status-item {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #10B981;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        /* --- CHAT MAIN INTERFACE --- */
+        .chat-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.05), transparent);
+        }
+
+        .chat-header {
+            padding: 20px 32px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--header-bg);
+            backdrop-filter: blur(8px);
+        }
+
+        /* PREMIUM PILL SLIDER TOGGLE */
+        .theme-switch {
+            position: relative;
+            display: inline-block;
+            width: 56px;
+            height: 28px;
+        }
+
+        .theme-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            transition: .4s;
+            border-radius: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 6px;
+        }
+
+        .slider i {
+            font-size: 12px;
+            color: var(--text-muted);
+            z-index: 1;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: var(--accent-primary);
+            transition: .4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 50%;
+            z-index: 2;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        input:checked+.slider {
+            background-color: #E5E7EB;
+            border-color: #D1D5DB;
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(28px);
+            background-color: #F59E0B;
+            /* Warm Sun Color */
+        }
+
+        .chat-window {
+            flex-grow: 1;
+            padding: 32px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .message {
+            display: flex;
+            gap: 16px;
+            max-width: 80%;
+        }
+
+        .message.system-ai {
+            align-self: flex-start;
+        }
+
+        .message.user-message {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+
+        .system-ai .avatar {
+            background-color: rgba(99, 102, 241, 0.15);
+            color: var(--accent-primary);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+
+        .user-message .avatar {
+            background-color: var(--border-color);
+            color: var(--text-main);
+        }
+
+        .msg-bubble {
+            padding: 14px 18px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .system-ai .msg-bubble {
+            background-color: var(--bg-card);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+        }
+
+        .user-message .msg-bubble {
+            background-color: var(--accent-primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+        }
+
+        /* --- THINKING ANIMATION --- */
+        .typing-indicator {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            height: 22px;
+        }
+
+        .typing-indicator span {
+            width: 6px;
+            height: 6px;
+            background-color: var(--text-muted);
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .typing-indicator span:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            80%,
+            100% {
+                transform: scale(0);
+            }
+
+            40% {
+                transform: scale(1);
+                background-color: var(--accent-primary);
+            }
+        }
+
+        /* --- INPUT ACTION FOOTER --- */
+        .chat-footer {
+            padding: 24px 32px;
+            background: linear-gradient(to top, var(--bg-main) 60%, transparent);
+        }
+
+        .input-wrapper {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            padding: 6px 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .input-wrapper:focus-within {
+            border-color: var(--accent-primary);
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.1);
+        }
+
+        .input-wrapper input {
+            flex-grow: 1;
+            background: none;
+            border: none;
+            color: var(--text-main);
+            padding: 12px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        /* PREMIUM SEND BUTTON UPGRADE */
+        .btn-send {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-hover));
+            color: white;
+            border: none;
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(99, 102, 241, 0.2);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-send:hover {
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+            transform: scale(1.05);
+        }
+
+        .btn-send:active {
+            transform: scale(0.92);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div>
+            <div class="brand">
+                <i class="fa-solid fa-brain"></i>
+                <span>Nexus AI</span>
+            </div>
+
+            <div class="context-panel">
+                <div class="section-label">Context Engine</div>
+                <div class="upload-box" onclick="document.getElementById('pdfInput').click()">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <p>Select PDF Workspace</p>
+                    <input type="file" id="pdfInput" accept="application/pdf" style="display: none"
+                        onchange="updateFileName()">
+                </div>
+                <div class="file-status" id="fileName">No workspace file selected</div>
+                <button class="btn-action" onclick="uploadPDF()">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Analyze Document
+                </button>
+            </div>
+        </div>
+
+        <div class="system-status">
+            <div class="section-label">System State</div>
+            <div class="status-item">
+                <span class="status-dot"></span>
+                <span>Node Core: Connected</span>
+            </div>
+            <div class="status-item">
+                <i class="fa-solid fa-server" style="font-size: 11px;"></i>
+                <span>Endpoint: localhost:3000</span>
+            </div>
+            <div class="status-item">
+                <i class="fa-solid fa-microchip" style="font-size: 11px;"></i>
+                <span>Engine: Llama 3 (Local)</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CHAT INTERFACE -->
+    <div class="chat-container">
+        <div class="chat-header">
+            <h2>Active Workspace Session</h2>
+
+            <!-- NEW PILL TOGGLE -->
+            <label class="theme-switch" title="Toggle Light/Dark Mode">
+                <input type="checkbox" id="themeCheckbox" onchange="toggleTheme()">
+                <div class="slider">
+                    <i class="fa-solid fa-moon"></i>
+                    <i class="fa-solid fa-lightbulb"></i>
+                </div>
+            </label>
+
+        </div>
+
+        <div class="chat-window" id="chatWindow">
+            <div class="message system-ai">
+                <div class="avatar">AI</div>
+                <div class="msg-bubble">
+                    Hello. I am <strong>Nexus AI</strong>. <br>
+                    Your isolated, offline development space is ready. Ask me a programming question or feed a
+                    documentation PDF into the context engine.
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-footer">
+            <div class="input-wrapper">
+                <input type="text" id="userInput" placeholder="Ask a question or request code compilation..."
+                    onkeypress="handleKeyPress(event)" autocomplete="off">
+                <button class="btn-send" onclick="sendMessage()">
+                    <i class="fa-solid fa-arrow-up-long"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BACKEND_URL = "http://localhost:3000";
+
+        // --- THEME TOGGLE LOGIC ---
+        function toggleTheme() {
+            // Because we use a checkbox slider, we just toggle the class based on state.
+            const isChecked = document.getElementById('themeCheckbox').checked;
+            if (isChecked) {
+                document.body.classList.add('light-mode');
+            } else {
+                document.body.classList.remove('light-mode');
+            }
+        }
+
+        // --- FILE HANDLING ---
+        function updateFileName() {
+            const input = document.getElementById('pdfInput');
+            const status = document.getElementById('fileName');
+            status.textContent = input.files.length > 0 ? `Selected: ${input.files[0].name}` : "No workspace file selected";
+        }
+
+        // --- UI CHAT LOGIC ---
+        function appendMessage(text, isUser) {
+            const windowEl = document.getElementById('chatWindow');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = isUser ? 'message user-message' : 'message system-ai';
+
+            msgDiv.innerHTML = `
+                <div class="avatar">${isUser ? 'ME' : 'AI'}</div>
+                <div class="msg-bubble">${text.replace(/\n/g, '<br>')}</div>
+            `;
+
+            windowEl.appendChild(msgDiv);
+            windowEl.scrollTop = windowEl.scrollHeight;
+        }
+
+        // --- THINKING INDICATOR LOGIC ---
+        function showThinking() {
+            const windowEl = document.getElementById('chatWindow');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'message system-ai';
+            msgDiv.id = 'thinkingBubble';
+
+            msgDiv.innerHTML = `
+                <div class="avatar">AI</div>
+                <div class="msg-bubble">
+                    <div class="typing-indicator">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            `;
+
+            windowEl.appendChild(msgDiv);
+            windowEl.scrollTop = windowEl.scrollHeight;
+        }
+
+        function removeThinking() {
+            const thinkingBubble = document.getElementById('thinkingBubble');
+            if (thinkingBubble) {
+                thinkingBubble.remove();
+            }
+        }
+
+        // --- API COMMUNICATION ---
+        async function sendMessage() {
+            const input = document.getElementById('userInput');
+            const query = input.value.trim();
+            if (!query) return;
+
+            appendMessage(query, true);
+            input.value = '';
+
+            showThinking();
+
+            try {
+                const response = await fetch(`${BACKEND_URL}/query`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query: query })
+                });
+                const result = await response.json();
+
+                removeThinking();
+                appendMessage(result.data || "Error capturing inference token stream.", false);
+            } catch (err) {
+                removeThinking();
+                appendMessage("Failed to negotiate payload delivery with the backend local socket.", false);
+            }
+        }
+
+        async function uploadPDF() {
+            const fileInput = document.getElementById('pdfInput');
+            if (fileInput.files.length === 0) {
+                alert("Please select a PDF first.");
+                return;
+            }
+
+            appendMessage(`Analyzing Document: "${fileInput.files[0].name}"...`, true);
+            showThinking();
+
+            const formData = new FormData();
+            formData.append('pdf', fileInput.files[0]);
+
+            try {
+                const response = await fetch(`${BACKEND_URL}/parse-pdf`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+
+                removeThinking();
+                appendMessage(result.data || "Analysis completed.", false);
+            } catch (err) {
+                removeThinking();
+                appendMessage("Failed to process the document.", false);
+            }
+        }
+
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') sendMessage();
+        }
+    </script>
+</body>
+
+</html>
