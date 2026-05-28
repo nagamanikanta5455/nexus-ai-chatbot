@@ -6,7 +6,7 @@ A premium, full-stack, 100% free offline AI assistant workspace built with Node.
 
 ## 📸 Interface Preview
 
-![Nexus AI Chatbot Interface](./screenshot.png)
+![Nexus AI Chatbot Interface](./screenshot.png?v=2)
 *Modern dark mode console featuring tactile action items, real-time system state monitoring, and a premium fluid theme toggle.*
 
 ---
