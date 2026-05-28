@@ -22,6 +22,19 @@ app.get('/', (req, res) => {
     res.send("Gen AI Server is Running");
 });
 
+// --- NEW ADDITION: CHAT FRONTEND WEB PIPELINE ---
+// Serves your front-end file directly from your HTTP server path
+app.get('/chat', (req, res) => {
+    res.sendFile(__dirname + '/chat.html');
+});
+
+// --- NEW ADDITION: DYNAMIC MONITOR HEALTH ENDPOINT ---
+// Your client-side JS pings this to dynamically paint the system status badge green
+app.get('/api/health', (req, res) => {
+    res.json({ status: 'alive' });
+});
+// ---------------------------------------------
+
 app.post('/query', async (req, res) => {
     console.log("Received Query:", req.body);
 

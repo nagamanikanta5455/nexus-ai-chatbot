@@ -166,9 +166,11 @@
         .status-dot {
             width: 8px;
             height: 8px;
-            background-color: #10B981;
+            background-color: #9CA3AF;
+            /* Starts gray until connected */
             border-radius: 50%;
             display: inline-block;
+            transition: background-color 0.3s ease;
         }
 
         /* --- CHAT MAIN INTERFACE --- */
@@ -416,7 +418,6 @@
 
 <body>
 
-    <!-- SIDEBAR -->
     <div class="sidebar">
         <div>
             <div class="brand">
@@ -442,8 +443,8 @@
         <div class="system-status">
             <div class="section-label">System State</div>
             <div class="status-item">
-                <span class="status-dot"></span>
-                <span>Node Core: Connected</span>
+                <span class="status-dot" id="node-status-dot"></span>
+                <span id="node-status-text">Checking Core...</span>
             </div>
             <div class="status-item">
                 <i class="fa-solid fa-server" style="font-size: 11px;"></i>
@@ -456,12 +457,10 @@
         </div>
     </div>
 
-    <!-- MAIN CHAT INTERFACE -->
     <div class="chat-container">
         <div class="chat-header">
             <h2>Active Workspace Session</h2>
 
-            <!-- NEW PILL TOGGLE -->
             <label class="theme-switch" title="Toggle Light/Dark Mode">
                 <input type="checkbox" id="themeCheckbox" onchange="toggleTheme()">
                 <div class="slider">
@@ -496,6 +495,31 @@
 
     <script>
         const BACKEND_URL = "http://localhost:3000";
+
+        // --- SYSTEM HEALTH CHECK ---
+        async function checkBackendStatus() {
+            const statusText = document.getElementById('node-status-text');
+            const statusDot = document.getElementById('node-status-dot');
+
+            if (!statusText || !statusDot) return;
+
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/health`);
+                if (response.ok) {
+                    statusText.innerText = "Node Core: Connected";
+                    statusDot.style.backgroundColor = "#10B981"; // Emerald Green
+                } else {
+                    throw new Error('Server error');
+                }
+            } catch (error) {
+                statusText.innerText = "Node Core: Offline";
+                statusDot.style.backgroundColor = "#EF4444"; // Warning Red
+            }
+        }
+
+        // Run health check immediately, then every 5 seconds
+        checkBackendStatus();
+        setInterval(checkBackendStatus, 5000);
 
         // --- THEME TOGGLE LOGIC ---
         function toggleTheme() {

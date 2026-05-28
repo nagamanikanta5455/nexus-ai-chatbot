@@ -19,9 +19,16 @@ app.get('/', (req, res) => {
     res.send("Gen AI Server is Running");
 });
 
+// --- NEW HEALTH CHECK ROUTE ---
+// The frontend pings this to turn the dot green
+app.get('/api/health', (req, res) => {
+    res.json({ status: 'alive' });
+});
+// ------------------------------
+
 app.post('/query', async (req, res) => {
     console.log("Received Query:", req.body);
-    
+
     try {
         const response = await fetch(OLLAMA_URL, {
             method: 'POST',
@@ -55,7 +62,7 @@ app.post('/query', async (req, res) => {
 app.post('/parse-pdf', upload.single('pdf'), async (req, res) => {
     try {
         console.log("Processing PDF...");
-        
+
         if (!req.file) {
             return res.status(400).send({ error: "No PDF file uploaded" });
         }
@@ -63,7 +70,7 @@ app.post('/parse-pdf', upload.single('pdf'), async (req, res) => {
         // 1. Parse the PDF
         const pdfData = await pdfParse(req.file.buffer);
         const pdfText = pdfData.text;
-        
+
         console.log(`PDF Parsed. Text length: ${pdfText.length}`);
 
         // 2. Send to Ollama
